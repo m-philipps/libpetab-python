@@ -89,11 +89,9 @@ def plot_lowlevel(plot_spec: pd.Series,
         # plotting all measurement data
         label_base = plot_spec[LEGEND_ENTRY]
         if plot_spec[PLOT_TYPE_DATA] == REPLICATE:
-            p = ax.plot(
-                conditions[conditions.index.values],
-                ms.repl[ms.repl.index.values], 'x',
-                label=label_base
-            )
+            _y = ms.repl[ms.repl.index.values].squeeze()
+            _t = conditions[conditions.index.values].to_list() * len(_y)
+            p = ax.plot(_t, _y, 'x', label=label_base)
 
         # construct errorbar-plots: noise specified above
         else:
