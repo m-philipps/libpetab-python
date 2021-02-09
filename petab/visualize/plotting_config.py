@@ -89,9 +89,12 @@ def plot_lowlevel(plot_spec: pd.Series,
         # plotting all measurement data
         label_base = plot_spec[LEGEND_ENTRY]
         if plot_spec[PLOT_TYPE_DATA] == REPLICATE:
-            _y = ms.repl[ms.repl.index.values].squeeze()
-            _t = conditions[conditions.index.values].to_list() * len(_y)
-            p = ax.plot(_t, _y, 'x', label=label_base)
+            _y_full = ms.repl[ms.repl.index.values]
+            _t_full = conditions
+            if not isinstance(_t_full, np.ndarray):
+                _t_full = _t_full[_t_full.index.values]
+            for _t, _y in zip(_t_full, _y_full):
+                p = ax.plot([_t]*len(_y), _y, 'x', label=label_base)
 
         # construct errorbar-plots: noise specified above
         else:
@@ -137,7 +140,8 @@ def plot_lowlevel(plot_spec: pd.Series,
                 'width': 2/3,
             }
 
-        p = ax.bar(x_name, ms['mean'], yerr=ms[noise_col],
+        yerr = ms[noise_col] if plot_spec[PLOT_TYPE_DATA] != REPLICATE else None
+        p = ax.bar(x_name, ms['mean'], yerr=yerr,
                    color=sns.color_palette()[0], **bar_kwargs)
 
         if plot_sim:
