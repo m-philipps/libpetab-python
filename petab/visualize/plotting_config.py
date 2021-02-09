@@ -140,7 +140,9 @@ def plot_lowlevel(plot_spec: pd.Series,
                 'width': 2/3,
             }
 
-        yerr = ms[noise_col] if plot_spec[PLOT_TYPE_DATA] != REPLICATE else None
+        yerr = ms[noise_col]
+        if plot_spec[PLOT_TYPE_DATA] == REPLICATE:
+            yerr = None
         p = ax.bar(x_name, ms['mean'], yerr=yerr,
                    color=sns.color_palette()[0], **bar_kwargs)
 
