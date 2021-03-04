@@ -89,11 +89,27 @@ def plot_lowlevel(plot_spec: pd.Series,
         # plotting all measurement data
         label_base = plot_spec[LEGEND_ENTRY]
         if plot_spec[PLOT_TYPE_DATA] == REPLICATE:
-            p = ax.plot(
-                conditions[conditions.index.values],
-                ms.repl[ms.repl.index.values], 'x',
-                label=label_base
-            )
+            i_color = 0
+            if len(ms.repl[ms.repl.index.values[0]]) != 1:
+                import matplotlib.pyplot as plt
+                cmap  = plt.cm.get_cmap('hsv', 6)
+                for i_repl in range(len(ms.repl[ms.repl.index.values[0]])):
+                    for i_cond in range(len(conditions[conditions.index.values])):
+                        # p = ax.plot(
+                        #     conditions[conditions.index.values][i_cond],
+                        #     ms.repl[ms.repl.index.values], 'x',
+                        #     label=label_base)
+                        kwargs = {'color': cmap(i_color), 'marker':'x',
+                                  'linestyle':'None', 'markersize':'10'}
+
+                        p = ax.plot(
+                            conditions[conditions.index.values][i_cond],
+                            ms.loc[conditions.index[i_cond],'repl'].iloc[i_repl], **kwargs)#'x',
+                            # label=label_base,color=cmap(i_color))
+                ax.plot([], [], label=label_base, **kwargs)
+                # color = p[0].get_color()
+                # p[0].set_colors(color)
+
 
         # construct errorbar-plots: noise specified above
         else:
