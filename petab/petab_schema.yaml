@@ -6,8 +6,13 @@ description: PEtab parameter estimation problem config file schema
 properties:
 
   format_version:
-    type: integer
-    description: Version of the PEtab format (e.g. 1).
+    anyof:
+      - type: string
+        #  (corresponding to PEP 440).
+        pattern: ^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$
+      - type: integer
+
+    description: Version of the PEtab format
 
   parameter_file:
     oneOf:
@@ -79,6 +84,27 @@ properties:
         - observable_files
         - measurement_files
         - condition_files
+
+  extensions:
+    type: object
+    description: |
+      PEtab extensions being used.
+    patternProperties:
+      "^[a-zA-Z_]\\w*$":
+
+        type: object
+        description: |
+          Information on a specific extension
+        properties:
+          version:
+            type: string
+            pattern: ^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$
+
+        required:
+          - version
+      additionalProperties: true
+
+    additionalProperties: false
 
 required:
   - format_version
