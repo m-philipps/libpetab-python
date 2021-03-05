@@ -86,7 +86,6 @@ def plot_lowlevel(plot_spec: pd.Series,
         # add xOffset
         conditions = conditions + plot_spec[X_OFFSET]
 
-        import matplotlib.pyplot as plt
         # plotting all measurement data
         label_base = plot_spec[LEGEND_ENTRY]
         if plot_spec[PLOT_TYPE_DATA] == REPLICATE:
@@ -98,19 +97,19 @@ def plot_lowlevel(plot_spec: pd.Series,
                     #     conditions[conditions.index.values][i_cond],
                     #     ms.repl[ms.repl.index.values], 'x',
                     #     label=label_base)
-                    kwargs = {'color': color, 'marker':'x',
-                              'linestyle':'None', 'markersize':'10'}
+                    kwargs = {'color': color, 'marker': 'x',
+                              'linestyle': 'None', 'markersize': '10'}
                     if isinstance(conditions, np.ndarray):
                         p = ax.plot(
                             conditions[i_cond],
-                            ms.loc[conditions[i_cond]-plot_spec[X_OFFSET], 'repl'].iloc[
-                                i_repl], **kwargs)
+                            ms.loc[conditions[i_cond]-plot_spec[X_OFFSET],
+                                   'repl'].iloc[i_repl], **kwargs)
                     else:
                         p = ax.plot(
                             conditions[conditions.index.values][i_cond],
-                            ms.loc[conditions.index[i_cond],'repl'].iloc[i_repl], **kwargs)
+                            ms.loc[conditions.index[i_cond],
+                                   'repl'].iloc[i_repl], **kwargs)
             ax.plot([], [], label=label_base, **kwargs)
-
 
         # construct errorbar-plots: noise specified above
         else:
