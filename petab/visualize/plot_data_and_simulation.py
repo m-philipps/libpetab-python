@@ -30,7 +30,7 @@ def plot_data_and_simulation(
         sim_cond_num_list: Optional[List[NumList]] = None,
         observable_id_list: Optional[List[IdsList]] = None,
         observable_num_list: Optional[List[NumList]] = None,
-        plotted_noise: Optional[str] = MEAN_AND_SD,
+        plotted_noise: Optional[str] = None,
         subplot_file_path: str = ''
 ) -> Optional[Union[Dict[str, plt.Subplot],
                     'np.ndarray[plt.Subplot]']]:
@@ -124,6 +124,10 @@ def plot_data_and_simulation(
     # import visualization specification, if file was specified
     if isinstance(vis_spec, str):
         vis_spec = core.get_visualization_df(vis_spec)
+        if (plotted_noise is None) and (PLOT_TYPE_DATA in vis_spec.columns):
+            plotted_noise = vis_spec[PLOT_TYPE_DATA]
+        elif plotted_noise is None:
+            plotted_noise = MEAN_AND_SD
 
     exp_data, vis_spec = create_or_update_vis_spec(exp_data,
                                                    exp_conditions,
