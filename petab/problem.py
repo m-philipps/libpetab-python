@@ -37,17 +37,21 @@ class Problem:
         sbml_reader: Stored to keep object alive.
         sbml_document: Stored to keep object alive.
         sbml_model: PEtab SBML model
+        extensions_config: Information on the extensions used
     """
 
-    def __init__(self,
-                 sbml_model: libsbml.Model = None,
-                 sbml_reader: libsbml.SBMLReader = None,
-                 sbml_document: libsbml.SBMLDocument = None,
-                 condition_df: pd.DataFrame = None,
-                 measurement_df: pd.DataFrame = None,
-                 parameter_df: pd.DataFrame = None,
-                 visualization_df: pd.DataFrame = None,
-                 observable_df: pd.DataFrame = None):
+    def __init__(
+            self,
+            sbml_model: libsbml.Model = None,
+            sbml_reader: libsbml.SBMLReader = None,
+            sbml_document: libsbml.SBMLDocument = None,
+            condition_df: pd.DataFrame = None,
+            measurement_df: pd.DataFrame = None,
+            parameter_df: pd.DataFrame = None,
+            visualization_df: pd.DataFrame = None,
+            observable_df: pd.DataFrame = None,
+            extensions_config: Dict = None,
+    ):
 
         self.condition_df: Optional[pd.DataFrame] = condition_df
         self.measurement_df: Optional[pd.DataFrame] = measurement_df
@@ -58,6 +62,7 @@ class Problem:
         self.sbml_reader: Optional[libsbml.SBMLReader] = sbml_reader
         self.sbml_document: Optional[libsbml.SBMLDocument] = sbml_document
         self.sbml_model: Optional[libsbml.Model] = sbml_model
+        self.extensions_config = extensions_config or {}
 
     def __getstate__(self):
         """Return state for pickling"""
@@ -96,7 +101,8 @@ class Problem:
             visualization_files: Union[str, Path,
                                        Iterable[Union[str, Path]]] = None,
             observable_files: Union[str, Path,
-                                    Iterable[Union[str, Path]]] = None
+                                    Iterable[Union[str, Path]]] = None,
+            extensions_config: Dict = None,
     ) -> 'Problem':
         """
         Factory method to load model and tables from files.
@@ -108,6 +114,7 @@ class Problem:
             parameter_file: PEtab parameter table
             visualization_files: PEtab visualization tables
             observable_files: PEtab observables tables
+            extensions_config: Information on the extensions used
         """
 
         sbml_model = sbml_document = sbml_reader = None
@@ -139,14 +146,17 @@ class Problem:
             observable_df = core.concat_tables(
                 observable_files, observables.get_observable_df)
 
-        return Problem(condition_df=condition_df,
-                       measurement_df=measurement_df,
-                       parameter_df=parameter_df,
-                       observable_df=observable_df,
-                       sbml_model=sbml_model,
-                       sbml_document=sbml_document,
-                       sbml_reader=sbml_reader,
-                       visualization_df=visualization_df)
+        return Problem(
+            condition_df=condition_df,
+            measurement_df=measurement_df,
+            parameter_df=parameter_df,
+            observable_df=observable_df,
+            sbml_model=sbml_model,
+            sbml_document=sbml_document,
+            sbml_reader=sbml_reader,
+            visualization_df=visualization_df,
+            extensions_config=extensions_config,
+        )
 
     @staticmethod
     def from_yaml(yaml_config: Union[Dict, Path, str]) -> 'Problem':
@@ -218,7 +228,8 @@ class Problem:
             visualization_files=[
                 get_path(f) for f in problem0.get(VISUALIZATION_FILES, [])],
             observable_files=[
-                get_path(f) for f in problem0.get(OBSERVABLE_FILES, [])]
+                get_path(f) for f in problem0.get(OBSERVABLE_FILES, [])],
+            extensions_config=yaml_config.get(EXTENSIONS, {})
         )
 
     @staticmethod
