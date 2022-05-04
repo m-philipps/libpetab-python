@@ -114,9 +114,12 @@ def model_factory(filepath_or_buffer: Any, model_language: str) -> Model:
     :param model_language: PEtab model language ID for the given model
     :returns: A :py:class:`Model` instance representing the given model
     """
-
     if model_language == "sbml":
         from .sbml_model import SbmlModel
         return SbmlModel.from_file(filepath_or_buffer)
+
+    if model_language == "pysb":
+        from .pysb_model import PySBModel
+        return PySBModel.from_file(filepath_or_buffer)
 
     raise ValueError(f"Unsupported model format: {model_language}")
